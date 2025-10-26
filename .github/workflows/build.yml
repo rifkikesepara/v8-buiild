@@ -38,7 +38,7 @@ jobs:
           python build.py --version=${{ env.V8_VERSION }} --platform=${{ env.PLATFORM }} --libs=${{ env.LIBS }} --no-nuget
 
       - name: Upload DLL and LIB
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: v8-binaries
           path: |
