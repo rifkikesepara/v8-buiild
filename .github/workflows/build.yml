@@ -1,0 +1,47 @@
+name: Build V8 for Windows x64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-v8:
+    runs-on: windows-latest
+
+    env:
+      PYTHON_VERSION: '3.11'
+      V8_VERSION: '12.8'
+      PLATFORM: 'x64'
+      LIBS: 'shared'
+
+    steps:
+      - name: Checkout v8-nuget
+        uses: actions/checkout@v3
+        with:
+          repository: pmed/v8-nuget
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install NuGet CLI
+        run: |
+          choco install nuget.commandline
+
+      - name: Install Git LFS
+        run: |
+          choco install git-lfs
+          git lfs install
+
+      - name: Build V8 (skip NuGet)
+        run: |
+          python build.py --version=${{ env.V8_VERSION }} --platform=${{ env.PLATFORM }} --libs=${{ env.LIBS }} --no-nuget
+
+      - name: Upload DLL and LIB
+        uses: actions/upload-artifact@v3
+        with:
+          name: v8-binaries
+          path: |
+            out/v8-${{ env.V8_VERSION }}-${{ env.PLATFORM }}-release-${{ env.LIBS }}/v8.dll
+            out/v8-${{ env.V8_VERSION }}-${{ env.PLATFORM }}-release-${{ env.LIBS }}/v8.lib
+            out/v8-${{ env.V8_VERSION }}-${{ env.PLATFORM }}-release-${{ env.LIBS }}/include/
