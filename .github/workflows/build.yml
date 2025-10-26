@@ -8,36 +8,31 @@ jobs:
     runs-on: windows-latest
 
     env:
-      PYTHON_VERSION: '3.11'
       V8_VERSION: '12.8'
       PLATFORM: 'x64'
       LIBS: 'shared'
 
     steps:
       - name: Checkout v8-nuget
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: pmed/v8-nuget
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install NuGet CLI
-        run: |
-          choco install nuget.commandline
+          python-version: '3.11'
 
       - name: Install Git LFS
         run: |
-          choco install git-lfs
+          choco install git-lfs -y
           git lfs install
 
-      - name: Build V8 (skip NuGet)
+      - name: Build V8
         run: |
-          python build.py --version=${{ env.V8_VERSION }} --platform=${{ env.PLATFORM }} --libs=${{ env.LIBS }} --no-nuget
+          python build.py --version=${{ env.V8_VERSION }} --platform=${{ env.PLATFORM }} --libs=${{ env.LIBS }}
 
-      - name: Upload DLL and LIB
+      - name: Upload V8 binaries
         uses: actions/upload-artifact@v4
         with:
           name: v8-binaries
