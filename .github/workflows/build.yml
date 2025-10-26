@@ -28,6 +28,10 @@ jobs:
           choco install git-lfs -y
           git lfs install
 
+      - name: Set VCINSTALLDIR from VSINSTALLDIR
+        run: |
+          echo "VCINSTALLDIR=$env:VSINSTALLDIR" >> $env:GITHUB_ENV
+
       - name: Build V8
         run: |
           python build.py --version=${{ env.V8_VERSION }} --platform=${{ env.PLATFORM }} --libs=${{ env.LIBS }}
